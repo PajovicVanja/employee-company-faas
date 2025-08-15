@@ -1,7 +1,4 @@
 // POST /api/graphql
-// GraphQL endpoint for SMS: send messages, manage templates, fetch logs
-// Dependencies loaded via dynamic import to stay ESM-compatible on Vercel.
-
 import { getDb } from './_lib/db.js';
 import { renderTemplate, kvListToObject, objectToKvList, sendSmsViaProvider, logSms } from './_lib/sms.js';
 
@@ -142,7 +139,6 @@ const resolvers = {
       filter = { templateId: input.templateId };
       update.$set.templateId = input.templateId;
     } else {
-      // if no id or templateId provided, generate a slug from name
       const slug = String(input.name).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 40);
       filter = { templateId: slug };
       update.$set.templateId = slug;
@@ -199,10 +195,7 @@ const resolvers = {
       providerResponse
     });
 
-    return mapLog({
-      _id: log.id,
-      ...log
-    });
+    return mapLog({ _id: log.id, ...log });
   }
 };
 
@@ -233,9 +226,8 @@ function mapLog(doc) {
 }
 
 export default async function handler(req, res) {
-  // CORS (optional, helpful for admin UI)
   res.setHeader('Access-Control-Allow-Origin', process.env.CORS_ALLOW_ORIGIN || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS,GET');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST' });

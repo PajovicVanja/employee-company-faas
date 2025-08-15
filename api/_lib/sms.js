@@ -1,4 +1,3 @@
-
 export function renderTemplate(body, varsObj = {}) {
   if (typeof body !== 'string') throw new Error('Template body must be a string');
   return body.replace(/{{\s*([\w.-]+)\s*}}/g, (_, key) => {
@@ -27,9 +26,7 @@ export async function sendSmsViaProvider({ to, text, senderId }) {
   if (!providerUrl) throw new Error('Missing SMS_API_URL env var');
 
   const headers = { 'Content-Type': 'application/json' };
-  if (apiKey) {
-    headers['Authorization'] = 'Basic ' + Buffer.from(apiKey).toString('base64');
-  }
+  if (apiKey) headers['Authorization'] = 'Basic ' + Buffer.from(apiKey).toString('base64');
 
   const payload = { to, text };
   if (senderId) payload.senderId = senderId;
@@ -43,25 +40,11 @@ export async function sendSmsViaProvider({ to, text, senderId }) {
   let data = null;
   try { data = await resp.json(); } catch { data = null; }
 
-  return {
-    ok: resp.ok,
-    status: resp.status,
-    data
-  };
+  return { ok: resp.ok, status: resp.status, data };
 }
 
-export async function logSms(db, {
-  phone, message, templateId = null, variables = {}, status = 'SENT', providerResponse = null
-}) {
-  const doc = {
-    phone,
-    message,
-    templateId,
-    variables,
-    status,
-    providerResponse,
-    createdAt: new Date()
-  };
+export async function logSms(db, { phone, message, templateId = null, variables = {}, status = 'SENT', providerResponse = null }) {
+  const doc = { phone, message, templateId, variables, status, providerResponse, createdAt: new Date() };
   const { insertedId } = await db.collection('sms_logs').insertOne(doc);
   return { id: String(insertedId), ...doc };
 }
