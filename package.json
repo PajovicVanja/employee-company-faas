@@ -4,11 +4,9 @@
   "private": true,
   "description": "Tiny serverless helpers for Employee Service (no third-party libs).",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "dev": "vercel dev",
-    "start": "node api/health.js"
+    "dev": "vercel dev"
   },
-  "engines": {
-    "node": ">=18"
-  }
+  "engines": { "node": ">=18" }
 }
